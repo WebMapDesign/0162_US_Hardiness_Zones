@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+}
+
+#map {
+  font-family: Helvetica, Arial, sans-serif;
+  width: 1000px;
+  height: 750px;
+  margin: 10px;
+  border: 2px solid black;
+}
+
+#map-Alaska {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 250px;
+  height: 180px;
+  z-index: 3000;
+}
+
+#map-Hawaii {
+  position: absolute;
+  bottom: 10px;
+  left: 260px;
+  width: 200px;
+  height: 140px;
+  z-index: 3000;
+}
+
+.leaflet-container {
+  background-color: #ffffff;
+}
+
+#map-Alaska.leaflet-container,
+#map-Hawaii.leaflet-container {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+/* -------------SIDEBAR-------------- */
+.leaflet-sidebar {
+  width: auto;
+  height: auto;
+}
+
+.leaflet-sidebar.right.visible ~ .leaflet-right {
+  right: 10px;
+}
+
+#div-sidebar-info {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#state-name {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 20px;
+  margin: 15px;
+}
+
+#state-scale {
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  height: 15px;
+  padding-bottom: 5px;
+}
+
+#state-hardiness-map {
+  padding: 5px;
+}
+
+.latin-name {
+  font-style: italic;
+}
+
+.card {
+  border: 0;
+}
+
+.card-text {
+  text-align: justify;
+  margin-bottom: 0;
+}
+
+.image-credits {
+  font-size: 10px;
+}
+
+/* -------------LEGEND-------------- */
+.info {
+  padding: 6px 8px;
+  background-color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.legend {
+  line-height: 16px;
+  color: #555;
+}
+
+.legend i {
+  float: left;
+  width: 25px;
+  height: 15px;
+  margin-right: 10px;
+  opacity: 1;
+  /* border: 1px solid black; */
+}
+
+.sidepanel i {
+  float: left;
+  width: 15px;
+  height: 15px;
+  opacity: 1;
+  line-height: 15px;
+}
+
+/* ---------------SEARCH BAR --------------- */
+#div-zip-code-search {
+  position: absolute;
+  left: 100px;
+  top: 10px;
+  width: auto;
+  height: auto;
+  padding-bottom: 10px;
+}
+
+/* ---------------COLOR PICKER --------------- */
+#non-existing {
+  color: #ebec87;
+}
