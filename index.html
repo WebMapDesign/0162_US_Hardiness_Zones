@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="shortcut icon" href="#" />
+    <title>Test Other Map Projection</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="styles/L.Control.Sidebar.css" />
+    <link rel="stylesheet" href="styles/style.css" />
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+      integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      crossorigin=""
+    ></script>
+    <script src="scripts/L.Control.Sidebar.js"></script>
+    <script src="scripts/proj4-compressed.js"></script>
+    <script src="scripts/proj4leaflet.js"></script>
+
+    <script src="data/values_hardiness_zip_codes.js"></script>
+    <script src="data/us_states_EPSG_5070.js"></script>
+    <script src="data/alaska.js"></script>
+    <script src="data/hawaii.js"></script>
+  </head>
+
+  <body>
+    <div id="map">
+      <div id="map-Alaska"></div>
+      <div id="map-Hawaii"></div>
+
+      <div id="div-zip-code-search" class="info">
+        <p>
+          <span id="hardiness-zone-output">Enter a 5-digit zip code</span>
+        </p>
+        <input id="zip-code-input" type="text" placeholder="Zip Code" />
+        <br />
+        <div id="zip_search_results"></div>
+      </div>
+    </div>
+
+    <div id="div-sidebar-info">
+      <div class="card" style="width: 18rem">
+        <div class="card-body">
+          <p id="state-name">COLORADO (CO)</p>
+          <figure>
+            <img
+              src="images/test_img.png"
+              class="card-img-top"
+              alt="tree image"
+            />
+            <figcaption class="image-credits">Source of photo</figcaption>
+          </figure>
+          <h6 class="card-title">
+            Blue Spruce <span class="latin-name">(Picea pungens)</span>
+          </h6>
+          <p class="card-text">
+            Positioned inland, Colorado’s climate is one with generally large
+            temperature differences between seasons. The landscape is complex
+            and includes arid deserts, canyons, plains, and mountain ranges.
+            Elevations up to 14,000 feet create more zones of temperature than
+            usual for the latitude.
+          </p>
+          <a
+            href="https://en.wikipedia.org/wiki/Colorado"
+            target="_blank"
+            class="btn btn-link"
+            >Trees to plant in Colorado</a
+          >
+          <div class="sidepanel" id="state-scale"></div>
+          <div id="state-hardiness-map">
+            <img
+              src="raster/clipped_CO.png"
+              class="card-img-bottom"
+              alt="raster state image"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="scripts/main.js"></script>
+  </body>
+</html>
