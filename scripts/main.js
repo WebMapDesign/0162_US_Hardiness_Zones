@@ -27,15 +27,7 @@ const colorsHardinessScale = {
   "13b": "#751502",
 };
 
-const crs2163 = new L.Proj.CRS(
-  "EPSG:2163",
-  "+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs",
-  {
-    origin: [0, 0],
-    resolutions: [5500],
-  }
-);
-
+// EPSG:5070 Contiguous US
 const crs5070 = new L.Proj.CRS(
   "EPSG:5070",
   "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
@@ -45,6 +37,7 @@ const crs5070 = new L.Proj.CRS(
   }
 );
 
+// EPSG:3338 Alaska
 const crs3338 = new L.Proj.CRS(
   "EPSG:3338",
   "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
@@ -54,37 +47,38 @@ const crs3338 = new L.Proj.CRS(
   }
 );
 
+// EPSG:102114 Hawaii
 const crs102114 = new L.Proj.CRS(
   "EPSG:102114",
   "+proj=utm +zone=4 +ellps=clrk66 +units=m +no_defs",
   {
     origin: [0, 0],
-    resolutions: [3000],
+    resolutions: [3500],
   }
 );
 
-const disableMapControls = {
-  doubleClickZoom: false,
-  // dragging: false,
-  boxZoom: false,
-  zoomControl: false,
+const disabledMapControls = {
   attributionControl: false,
+  boxZoom: false,
+  doubleClickZoom: false,
+  dragging: false,
+  zoomControl: false,
 };
 
 let map = L.map("map", {
-  ...disableMapControls,
+  ...disabledMapControls,
   crs: crs5070,
-}).setView([39.0, -98.0], 0);
+}).setView([36.0, -98.0], 0);
 
 let mapAlaska = L.map("map-Alaska", {
-  ...disableMapControls,
+  ...disabledMapControls,
   crs: crs3338,
-}).setView([62.0, -153.0], 0);
+}).setView([62.5, -153.0], 0);
 
 let mapHawaii = L.map("map-Hawaii", {
-  ...disableMapControls,
+  ...disabledMapControls,
   crs: crs102114,
-}).setView([20.8, -157.1], 0);
+}).setView([20.5, -157.3], 0);
 
 let sidebarResults = L.control.sidebar("div-sidebar-info", {
   position: "right",
@@ -93,17 +87,48 @@ let sidebarResults = L.control.sidebar("div-sidebar-info", {
 });
 
 map.addControl(sidebarResults);
-// sidebarResults.show();
 
 let styleStates = {
   color: "#ffffff",
   fillColor: "#ffffff",
   fillOpacity: 0,
   opacity: 1,
-  weight: 1.5,
+  weight: 1,
 };
 
-let layerStates;
+let styleStatesOther = {
+  color: "#ffffff",
+  fillColor: "#ffffff",
+  fillOpacity: 0,
+  opacity: 1,
+  weight: 0,
+};
+
+let styleHidden = {
+  color: "#ffffff",
+  fillColor: "#ffffff",
+  fillOpacity: 0,
+  opacity: 0,
+  weight: 1,
+};
+
+let styleFilterHideContiguous = {
+  color: "#ffffff",
+  fillColor: "#ffffff",
+  fillOpacity: 0.5,
+  opacity: 1,
+  weight: 1,
+};
+
+let styleFilterHideOther = {
+  color: "#ffffff",
+  fillColor: "#ffffff",
+  fillOpacity: 0.5,
+  opacity: 1,
+  weight: 0,
+};
+
+let layerStatesContiguous;
 let layerStatesAlaska;
 let layerStatesHawaii;
 
@@ -111,55 +136,115 @@ function highlightFeature(e) {
   var layer = e.target;
 
   layer.setStyle({
-    color: "#ffffff",
-    fillColor: "#ffffff",
+    fillColor: "#000000",
     fillOpacity: 0.2,
     opacity: 1,
-    weight: 2,
   });
 }
 
-function resetHighlight(e) {
-  layerStates.resetStyle(e.target);
+function resetHighlightContiguous(e) {
+  layerStatesContiguous.resetStyle(e.target);
 }
 
-function onEachFeatureStates(feature, layer) {
-  let tooltipContent = feature.properties.name;
-  layer.bindTooltip(tooltipContent, {
-    direction: "center",
-    className: "tooltip-style",
-  });
+function resetHighlightAK(e) {
+  layerStatesAlaska.resetStyle(e.target);
+}
 
+function resetHighlightHI(e) {
+  layerStatesHawaii.resetStyle(e.target);
+}
+
+function onEachFeatureStatesContiguous(feature, layer) {
   layer.on({
     mouseover: highlightFeature,
-    mouseout: resetHighlight,
+    mouseout: resetHighlightContiguous,
     click: showStateInfo,
   });
 }
 
-layerStates = L.Proj.geoJson(geojsonStatesZones, {
+function onEachFeatureOpacity(feature, layer) {
+  layer.on({
+    click: hideStateInfo,
+  });
+}
+
+function onEachFeatureStatesAK(feature, layer) {
+  layer.on({
+    mouseover: highlightFeature,
+    mouseout: resetHighlightAK,
+    click: showStateInfo,
+  });
+}
+
+function onEachFeatureStatesHI(feature, layer) {
+  layer.on({
+    mouseover: highlightFeature,
+    mouseout: resetHighlightHI,
+    click: showStateInfo,
+  });
+}
+
+function onEachFeatureHidden(feature, layer) {
+  layer.on({
+    click: hideStateInfo,
+  });
+}
+
+layerStatesContiguous = L.Proj.geoJson(geojsonStatesZones, {
   style: styleStates,
-  onEachFeature: onEachFeatureStates,
+  onEachFeature: onEachFeatureStatesContiguous,
 }).addTo(map);
 
 layerStatesAlaska = L.Proj.geoJson(geojsonStateAlaska, {
-  style: styleStates,
-  onEachFeature: onEachFeatureStates,
+  style: styleStatesOther,
+  onEachFeature: onEachFeatureStatesAK,
 }).addTo(mapAlaska);
 
 layerStatesHawaii = L.Proj.geoJson(geojsonStateHawaii, {
-  style: styleStates,
-  onEachFeature: onEachFeatureStates,
+  style: styleStatesOther,
+  onEachFeature: onEachFeatureStatesHI,
 }).addTo(mapHawaii);
+
+layerOpacityContiguous = L.Proj.geoJson(geojsonStatesZones, {
+  style: styleFilterHideContiguous,
+  onEachFeature: onEachFeatureOpacity,
+});
+
+layerOpacityAlaska = L.Proj.geoJson(geojsonStateAlaska, {
+  style: styleFilterHideOther,
+  onEachFeature: onEachFeatureOpacity,
+});
+
+layerOpacityHawaii = L.Proj.geoJson(geojsonStateHawaii, {
+  style: styleFilterHideOther,
+  onEachFeature: onEachFeatureOpacity,
+});
+
+let layerDifference = L.Proj.geoJson(geojsonDifference, {
+  style: styleHidden,
+  onEachFeature: onEachFeatureHidden,
+}).addTo(map);
 
 // ---------------STATE INFO ------------
 const stateName = document.querySelector("#state-name");
-const stateScale = document.querySelector("#state-scale");
+const climateDescription = document.querySelector("#climate-description");
+const nameStateTree = document.querySelector("#name-tree");
+const treeImage = document.querySelector("#tree-image");
+const treesToPlant = document.querySelector("#trees-to-plant");
 
+const stateScale = document.querySelector("#state-scale");
+const containerStateZoom = document.querySelector("#div-state-zoom");
+
+// at map initialization the sidebar is closed
 let sidebarStatus = "closed";
 
 function showStateInfo(e) {
-  sidebarResults.show(); // sidebar opens
+  layerOpacityContiguous.addTo(map);
+  layerOpacityAlaska.addTo(mapAlaska);
+  layerOpacityHawaii.addTo(mapHawaii);
+
+  // sidebar opens
+  sidebarResults.show();
 
   stateScale.innerHTML = ""; //empty
 
@@ -174,8 +259,64 @@ function showStateInfo(e) {
     .split(",");
 
   listStateZones.forEach((zone) => {
-    stateScale.innerHTML += `<i class="sidepanel" style="background: ${colorsHardinessScale[zone]}"></i>`;
+    stateScale.innerHTML += `<i class="sidepanel" style="background: ${colorsHardinessScale[zone]}">${zone}</i>`;
   });
+
+  climateDescription.innerText = stateInformation.filter(
+    (i) => i["state_name"] === e.target.feature.properties.name
+  )[0]["climate_description"];
+
+  nameStateTree.innerText = stateInformation.filter(
+    (i) => i["state_name"] === e.target.feature.properties.name
+  )[0]["tree_name"];
+
+  let demoStates = ["AZ", "CO", "MT", "UT", "WY"];
+  if (demoStates.includes(e.target.feature.properties.abbrev)) {
+    treeImage.src =
+      "images/state_trees/tree_" + e.target.feature.properties.abbrev + ".png";
+  }
+
+  treesToPlant.href = stateInformation.filter(
+    (i) => i["state_name"] === e.target.feature.properties.name
+  )[0]["trees_plant_url"];
+  treesToPlant.innerText =
+    "Trees to plant in " + e.target.feature.properties.name;
+
+  containerStateZoom.style.display = "block";
+  containerStateZoom.innerHTML = "";
+
+  containerStateZoom.innerHTML =
+    '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
+    e.target.feature.properties.abbrev +
+    '.png">';
+}
+
+function hideStateInfo(e) {
+
+  // the layers used to induce opacity are removed
+  if (map.hasLayer(layerOpacityContiguous)) {
+    map.removeLayer(layerOpacityContiguous);
+  }
+
+  if (mapAlaska.hasLayer(layerOpacityAlaska)) {
+    mapAlaska.removeLayer(layerOpacityAlaska);
+  }
+
+  if (mapHawaii.hasLayer(layerOpacityHawaii)) {
+    mapHawaii.removeLayer(layerOpacityHawaii);
+  }
+
+  // sidebar closes
+  if (sidebarStatus === "opened") {
+    sidebarResults.hide();
+  }
+
+  // state zoom closes
+  if (containerStateZoom.style.display === "block") {
+    containerStateZoom.style.display = "none";
+  }
+
+  treeImage.src = "images/state_trees/test_img.png";
 }
 
 sidebarResults.on("shown", function () {
@@ -184,12 +325,6 @@ sidebarResults.on("shown", function () {
 
 sidebarResults.on("hidden", function () {
   sidebarStatus = "closed";
-});
-
-map.on("click", function (e) {
-  if (sidebarStatus === "opened") {
-    sidebarResults.hide(); // sidebar opens
-  }
 });
 
 // ---------------LEGEND ---------------
@@ -228,20 +363,44 @@ inputZipCode.addEventListener("input", function () {
   }
 });
 
-// ---------------RASTER HARDINESS ---------------
-let rasterUrl = "raster/raster_ophz.png";
+// ---------------IMAGE OVERLAY RASTER HARDINESS---------------
+let urlRasterContiguous = "images/raster/img_contiguous.png";
+let urlRasterAK = "images/raster/img_AK.png";
+let urlRasterHI = "images/raster/img_HI.png";
 
-let imageBounds = [
+let boundsRasterContiguous = [
   [23.08, -127.9],
   [47.95, -74.2],
+];
+
+let boundsRasterAK = [
+  [49.1, 175.7],
+  [67.6, -117.5],
+];
+
+let boundsRasterHI = [
+  [18.9, -160.28],
+  [22.25, -154.8],
 ];
 
 const optionsImageOverlay = {
   opacity: 1,
 };
 
-let layerRasterHardinessZones = L.imageOverlay(
-  rasterUrl,
-  imageBounds,
+let layerRasterHardinessZonesCON = L.imageOverlay(
+  urlRasterContiguous,
+  boundsRasterContiguous,
   optionsImageOverlay
 ).addTo(map);
+
+let layerRasterHardinessZonesAK = L.imageOverlay(
+  urlRasterAK,
+  boundsRasterAK,
+  optionsImageOverlay
+).addTo(mapAlaska);
+
+let layerRasterHardinessZonesHI = L.imageOverlay(
+  urlRasterHI,
+  boundsRasterHI,
+  optionsImageOverlay
+).addTo(mapHawaii);
