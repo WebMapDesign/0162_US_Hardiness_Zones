@@ -40,10 +40,13 @@
     <script src="scripts/proj4-compressed.js"></script>
     <script src="scripts/proj4leaflet.js"></script>
 
-    <script src="data/values_hardiness_zip_codes.js"></script>
-    <script src="data/us_states_EPSG_5070.js"></script>
-    <script src="data/alaska.js"></script>
-    <script src="data/hawaii.js"></script>
+    <script src="data/hardiness_zip_codes.js"></script>
+    <script src="data/details_states.js"></script>
+
+    <script src="data/polygons_contiguous.js"></script>
+    <script src="data/polygons_contiguous_negative.js"></script>
+    <script src="data/polygons_alaska.js"></script>
+    <script src="data/polygons_hawaii.js"></script>
   </head>
 
   <body>
@@ -61,41 +64,38 @@
       </div>
     </div>
 
+    <div id="div-state-zoom"></div>
+
     <div id="div-sidebar-info">
-      <div class="card" style="width: 18rem">
+      <div class="card" style="width: 25rem">
         <div class="card-body">
-          <p id="state-name">COLORADO (CO)</p>
-          <figure>
-            <img
-              src="images/test_img.png"
-              class="card-img-top"
-              alt="tree image"
-            />
-            <figcaption class="image-credits">Source of photo</figcaption>
-          </figure>
-          <h6 class="card-title">
-            Blue Spruce <span class="latin-name">(Picea pungens)</span>
-          </h6>
-          <p class="card-text">
-            Positioned inland, Colorado’s climate is one with generally large
-            temperature differences between seasons. The landscape is complex
-            and includes arid deserts, canyons, plains, and mountain ranges.
-            Elevations up to 14,000 feet create more zones of temperature than
-            usual for the latitude.
-          </p>
-          <a
-            href="https://en.wikipedia.org/wiki/Colorado"
-            target="_blank"
-            class="btn btn-link"
-            >Trees to plant in Colorado</a
-          >
-          <div class="sidepanel" id="state-scale"></div>
-          <div id="state-hardiness-map">
-            <img
-              src="raster/clipped_CO.png"
-              class="card-img-bottom"
-              alt="raster state image"
-            />
+          <p class="card-title" id="state-name">COLORADO (CO)</p>
+
+          <div class="row">
+            <div class="col-2 sidepanel" id="state-scale"></div>
+            <div class="col-10">
+              <p class="card-text" id="climate-description"></p>
+              <br />
+              <p class="card-title" id="state-tree">
+                State Tree: <span id="name-tree">Blue Spruce</span>
+              </p>
+              <figure>
+                <img
+                  src="images/state_trees/test_img.png"
+                  id="tree-image"
+                  class="card-img-top"
+                  alt="tree image"
+                />
+                <figcaption class="image-credits">Source of photo: Name of website</figcaption>
+              </figure>
+              <a
+                href="https://en.wikipedia.org/wiki/Colorado"
+                id="trees-to-plant"
+                target="_blank"
+                class="link-trees-to-plant"
+                >Trees to plant</a
+              >
+            </div>
           </div>
         </div>
       </div>
