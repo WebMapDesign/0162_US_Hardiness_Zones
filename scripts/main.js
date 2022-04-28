@@ -1,3 +1,9 @@
+const containerMap = document.querySelector("#map");
+const containerZipCodeSearch = document.querySelector("#div-zip-code-search");
+const containerLegendHorizontal = document.querySelector(
+  "#legend-zones-horizontal"
+);
+
 const colorsHardinessScale = {
   "1a": "#d6d6ff",
   "1b": "#c4c4f2",
@@ -61,7 +67,6 @@ const disabledMapControls = {
   attributionControl: false,
   boxZoom: false,
   doubleClickZoom: false,
-  dragging: false,
   zoomControl: false,
 };
 
@@ -69,18 +74,47 @@ const centerContiguous = [36.0, -98.0];
 
 let map = L.map("map", {
   ...disabledMapControls,
+  maxBounds: [
+    [50, -130],
+    [10, -50],
+  ],
   crs: crs5070,
 }).setView(centerContiguous, 1);
 
-resizeMap();
+// ---------------LEGENDS ---------------
+let legendZonesVertical = L.control({ position: "topleft" });
+legendZonesVertical.onAdd = function (map) {
+  // add reference
+  map.legendV = this;
+  let div = L.DomUtil.create("div", "info legend-v legend-zones-vertical");
+  for (const zone in colorsHardinessScale) {
+    div.innerHTML += `<i style="background: ${colorsHardinessScale[zone]}"></i>${zone}<br>`;
+  }
+  return div;
+};
+legendZonesVertical.onRemove = function (map) {
+  // remove reference
+  delete map.legendV;
+};
 
+for (const zone in colorsHardinessScale) {
+  containerLegendHorizontal.innerHTML += `<i style="background: ${colorsHardinessScale[zone]};flex-grow: 1">${zone}</i>`;
+}
+
+// ---------------DECIDE LAYOUT BASED ON WINDOW WIDTH ---------------
+let widthMap;
+decideMapLayout();
+
+// ---------------OTHER MAPS ---------------
 let mapAlaska = L.map("map-Alaska", {
   ...disabledMapControls,
+  dragging: false,
   crs: crs3338,
 }).setView([62.5, -153.0], 0);
 
 let mapHawaii = L.map("map-Hawaii", {
   ...disabledMapControls,
+  dragging: false,
   crs: crs102114,
 }).setView([20.5, -157.3], 0);
 
@@ -230,6 +264,7 @@ let layerDifference = L.Proj.geoJson(geojsonDifference, {
 }).addTo(map);
 
 // ---------------STATE INFO ------------
+
 const stateName = document.querySelector("#state-name");
 const climateDescription = document.querySelector("#climate-description");
 const nameStateTree = document.querySelector("#name-tree");
@@ -237,6 +272,9 @@ const treeImage = document.querySelector("#tree-image");
 const treesToPlant = document.querySelector("#trees-to-plant");
 const stateScale = document.querySelector("#state-scale");
 const containerStateZoom = document.querySelector("#div-state-zoom");
+const containerStateZoomMobile = document.querySelector(
+  "#div-state-zoom-mobile"
+);
 
 const closeButton = document.querySelector(".close");
 closeButton.addEventListener("click", hideStateInfo);
@@ -287,13 +325,27 @@ function showStateInfo(e) {
   )[0]["trees_plant_url"];
   treesToPlant.innerText = "Planting Zones " + e.target.feature.properties.name;
 
-  containerStateZoom.style.display = "block";
-  containerStateZoom.innerHTML = "";
+  widthMap = containerMap.offsetWidth;
+  if (widthMap < 768) {
+    containerStateZoomMobile.style.display = "block";
+    containerStateZoomMobile.innerHTML = "";
 
-  containerStateZoom.innerHTML =
-    '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
-    e.target.feature.properties.abbrev +
-    '.png">';
+    containerStateZoomMobile.innerHTML =
+      '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
+      e.target.feature.properties.abbrev +
+      '.png">';
+
+    // hide zip code search
+    containerZipCodeSearch.style.display = "none";
+  } else {
+    containerStateZoom.style.display = "block";
+    containerStateZoom.innerHTML = "";
+
+    containerStateZoom.innerHTML =
+      '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
+      e.target.feature.properties.abbrev +
+      '.png">';
+  }
 }
 
 function hideStateInfo(e) {
@@ -318,6 +370,15 @@ function hideStateInfo(e) {
   // state zoom closes
   if (containerStateZoom.style.display === "block") {
     containerStateZoom.style.display = "none";
+  }
+
+  // state zoom for mobile closes
+  if (containerStateZoomMobile.style.display === "block") {
+    containerStateZoomMobile.style.display = "none";
+  }
+
+  if (containerZipCodeSearch.style.display === "none") {
+    containerZipCodeSearch.style.display = "block";
   }
 
   treeImage.src = "images/state_trees/test_img.png";
@@ -352,20 +413,6 @@ inputZipCode.addEventListener("input", function () {
     outputHardinessZone.textContent = "Enter a 5-digit zip code";
   }
 });
-
-// ---------------LEGEND ---------------
-let legendZones = L.control({ position: "topleft" });
-
-legendZones.onAdd = function (map) {
-  let div = L.DomUtil.create("div", "info legend legend-zones");
-
-  for (const zone in colorsHardinessScale) {
-    div.innerHTML += `<i style="background: ${colorsHardinessScale[zone]}"></i>${zone}<br>`;
-  }
-  return div;
-};
-
-legendZones.addTo(map);
 
 // ---------------IMAGE OVERLAY RASTER HARDINESS---------------
 let urlRasterContiguous = "images/raster/img_contiguous.png";
@@ -409,14 +456,18 @@ let layerRasterHardinessZonesHI = L.imageOverlay(
   optionsImageOverlay
 ).addTo(mapHawaii);
 
-function resizeMap() {
-  let width = window.innerWidth;
-  if (width <= 768) {
+function decideMapLayout() {
+  widthMap = containerMap.offsetWidth;
+  if (widthMap <= 768) {
     map.setView(centerContiguous, 0);
+    if (map.legendV) {
+      map.removeControl(legendZonesVertical);
+    }
   }
-  if (width > 768) {
+  if (widthMap > 768) {
     map.setView(centerContiguous, 1);
+    map.addControl(legendZonesVertical);
   }
 }
 
-window.addEventListener("resize", resizeMap);
+window.addEventListener("resize", decideMapLayout);
