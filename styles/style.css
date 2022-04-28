@@ -104,10 +104,6 @@
 }
 
 /* vertical legend for wide screens */
-.legend-zones-vertical {
-  top: 80px;
-}
-
 .legend-v i {
   float: left;
   width: 25px;
@@ -149,7 +145,7 @@
 /* ---------------SEARCH BAR --------------- */
 #div-zip-code-search {
   position: absolute;
-  left: 10px;
+  left: 90px;
   top: 10px;
   width: auto;
   height: auto;
