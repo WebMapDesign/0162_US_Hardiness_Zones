@@ -6,7 +6,7 @@
   font-family: Helvetica, Arial, sans-serif;
   width: 100vw;
   max-width: 1200px;
-  height: 100vh;
+  height: 80vh;
   z-index: 1000;
 }
 
@@ -109,9 +109,9 @@
   color: #555;
 }
 
-.leaflet-top .leaflet-control {
+/* .leaflet-top .leaflet-control {
   margin-top: 100px;
-}
+} */
 
 /* horizontal legend for narrow screens */
 #legend-zones-horizontal {
