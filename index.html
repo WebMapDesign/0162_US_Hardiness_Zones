@@ -50,41 +50,40 @@
   </head>
 
   <body>
-    <div id="map">
-      <div id="map-Alaska"></div>
-      <div id="map-Hawaii"></div>
-
-      <div id="map-menu" class="container-fluid">
-        <div class="row">
-          <div class="col-5 col-sm-4 col-md-3">
-            <div id="div-zip-code-search" class="info">
-              <p>
-                <span id="hardiness-zone-output">Search zip code</span>
-              </p>
-              <input
-                id="zip-code-input"
-                class="form-control"
-                type="text"
-                placeholder="Zip Code"
-              />
-            </div>
+    <div id="map-menu" class="container-fluid">
+      <div class="row">
+        <div class="col-5 col-sm-4 col-md-3">
+          <div id="div-zip-code-search" class="info">
+            <p>
+              <span id="hardiness-zone-output">Search zip code</span>
+            </p>
+            <input
+              id="zip-code-input"
+              class="form-control"
+              type="text"
+              placeholder="Zip Code"
+            />
           </div>
+        </div>
 
-          <div class="col-7 col-sm-4 col-md-3">
-            <div id="div-select-state" class="dropdown info">
-              <p>Select a state</p>
-              <select
-                class="form-select"
-                id="select-state"
-                aria-label="Default select example"
-                onchange="showStateInfoAtSelect(value)"
-              >
-                <option value="none">-- Select State --</option>
-              </select>
-            </div>
+        <div class="col-7 col-sm-4 col-md-3">
+          <div id="div-select-state" class="dropdown info">
+            <p>Select a state</p>
+            <select
+              class="form-select"
+              id="select-state"
+              aria-label="Default select example"
+              onchange="showStateInfoAtSelect(value)"
+            >
+              <option value="none">-- Select State --</option>
+            </select>
           </div>
         </div>
       </div>
+    </div>
+    <div id="map">
+      <div id="map-Alaska"></div>
+      <div id="map-Hawaii"></div>
 
       <div id="legend-zones-horizontal" class="flex-container info"></div>
     </div>
