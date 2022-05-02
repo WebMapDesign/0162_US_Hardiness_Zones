@@ -54,13 +54,36 @@
       <div id="map-Alaska"></div>
       <div id="map-Hawaii"></div>
 
-      <div id="div-zip-code-search" class="info">
-        <p>
-          <span id="hardiness-zone-output">Enter a 5-digit zip code</span>
-        </p>
-        <input id="zip-code-input" type="text" placeholder="Zip Code" />
-        <br />
-        <div id="zip_search_results"></div>
+      <div id="map-menu" class="container-fluid">
+        <div class="row">
+          <div class="col-5 col-sm-4 col-md-3">
+            <div id="div-zip-code-search" class="info">
+              <p>
+                <span id="hardiness-zone-output">Search zip code</span>
+              </p>
+              <input
+                id="zip-code-input"
+                class="form-control"
+                type="text"
+                placeholder="Zip Code"
+              />
+            </div>
+          </div>
+
+          <div class="col-7 col-sm-4 col-md-3">
+            <div id="div-select-state" class="dropdown info">
+              <p>Select a state</p>
+              <select
+                class="form-select"
+                id="select-state"
+                aria-label="Default select example"
+                onchange="showStateInfoAtSelect(value)"
+              >
+                <option value="none">-- Select State --</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="legend-zones-horizontal" class="flex-container info"></div>
@@ -69,7 +92,7 @@
     <div id="div-state-zoom"></div>
 
     <div id="div-sidebar-info">
-      <div class="card" style="width: 25rem">
+      <div class="card" style="max-width: 25rem">
         <div class="card-body">
           <p class="card-title" id="state-name">COLORADO (CO)</p>
 
@@ -81,21 +104,18 @@
               <p class="card-title" id="state-tree">
                 State Tree: <span id="name-tree">Blue Spruce</span>
               </p>
-              <figure>
-                <img
-                  src="images/state_trees/test_img.png"
-                  id="tree-image"
-                  class="card-img-top"
-                  alt="tree image"
-                />
-                <figcaption class="image-credits">
-                  Source of photo: Name of website
-                </figcaption>
-              </figure>
+              <img
+                src=""
+                id="tree-image"
+                class="card-img-top"
+                alt="tree image"
+              />
+              <br />
+              <br />
               <p>
                 More Info:
                 <a
-                  href="https://en.wikipedia.org/wiki/Colorado"
+                  href=""
                   id="trees-to-plant"
                   target="_blank"
                   class="link-trees-to-plant"
