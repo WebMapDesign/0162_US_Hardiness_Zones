@@ -193,10 +193,16 @@ function resetHighlightHI(e) {
 }
 
 function onEachFeatureStatesContiguous(feature, layer) {
+  let tooltipContent = feature.properties.name;
+  layer.bindTooltip(tooltipContent, {
+    direction: "center",
+    className: "tooltip-style",
+  });
+
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlightContiguous,
-    click: showStateInfo,
+    click: showStateInfoAtClick,
   });
 }
 
@@ -207,18 +213,30 @@ function onEachFeatureOpacity(feature, layer) {
 }
 
 function onEachFeatureStatesAK(feature, layer) {
+  let tooltipContent = feature.properties.name;
+  layer.bindTooltip(tooltipContent, {
+    direction: "center",
+    className: "tooltip-style",
+  });
+
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlightAK,
-    click: showStateInfo,
+    click: showStateInfoAtClick,
   });
 }
 
 function onEachFeatureStatesHI(feature, layer) {
+  let tooltipContent = feature.properties.name;
+  layer.bindTooltip(tooltipContent, {
+    direction: "center",
+    className: "tooltip-style",
+  });
+
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlightHI,
-    click: showStateInfo,
+    click: showStateInfoAtClick,
   });
 }
 
@@ -228,7 +246,7 @@ function onEachFeatureHidden(feature, layer) {
   });
 }
 
-layerStatesContiguous = L.Proj.geoJson(geojsonStatesZones, {
+layerStatesContiguous = L.Proj.geoJson(geojsonStatesContiguous, {
   style: styleStates,
   onEachFeature: onEachFeatureStatesContiguous,
 }).addTo(map);
@@ -243,7 +261,7 @@ layerStatesHawaii = L.Proj.geoJson(geojsonStateHawaii, {
   onEachFeature: onEachFeatureStatesHI,
 }).addTo(mapHawaii);
 
-layerOpacityContiguous = L.Proj.geoJson(geojsonStatesZones, {
+layerOpacityContiguous = L.Proj.geoJson(geojsonStatesContiguous, {
   style: styleFilterHideContiguous,
   onEachFeature: onEachFeatureOpacity,
 });
@@ -258,13 +276,12 @@ layerOpacityHawaii = L.Proj.geoJson(geojsonStateHawaii, {
   onEachFeature: onEachFeatureOpacity,
 });
 
-let layerDifference = L.Proj.geoJson(geojsonDifference, {
+let layerStatesContiguousNegative = L.Proj.geoJson(geojsonStatesContiguousNegative, {
   style: styleHidden,
   onEachFeature: onEachFeatureHidden,
 }).addTo(map);
 
 // ---------------STATE INFO ------------
-
 const stateName = document.querySelector("#state-name");
 const climateDescription = document.querySelector("#climate-description");
 const nameStateTree = document.querySelector("#name-tree");
@@ -282,48 +299,40 @@ closeButton.addEventListener("click", hideStateInfo);
 // at map initialization the sidebar is closed
 let sidebarStatus = "closed";
 
-function showStateInfo(e) {
+function showStateInfoAtClick(e) {
   layerOpacityContiguous.addTo(map);
   layerOpacityAlaska.addTo(mapAlaska);
   layerOpacityHawaii.addTo(mapHawaii);
 
-  // sidebar opens
-  sidebarResults.show();
+  let clickedStateName = e.target.feature.properties.name;
 
-  stateScale.innerHTML = ""; //empty
+  infoClickedState = stateInformation.filter(
+    (i) => i["state_name"] === clickedStateName
+  )[0];
 
   stateName.innerText =
-    e.target.feature.properties.name.toUpperCase() +
+    clickedStateName.toUpperCase() +
     " (" +
-    e.target.feature.properties.abbrev +
+    infoClickedState["state_abbrev"] +
     ")";
 
-  let listStateZones = e.target.feature.properties.zones
+  let listStateZones = infoClickedState["state_zones"]
     .replaceAll("'", "")
     .split(",");
 
+  stateScale.innerHTML = ""; //empty
   listStateZones.forEach((zone) => {
     stateScale.innerHTML += `<i class="sidepanel" style="background: ${colorsHardinessScale[zone]}">${zone}</i>`;
   });
 
-  climateDescription.innerText = stateInformation.filter(
-    (i) => i["state_name"] === e.target.feature.properties.name
-  )[0]["climate_description"];
+  climateDescription.innerText = infoClickedState["climate_description"];
+  nameStateTree.innerText = infoClickedState["tree_name"];
 
-  nameStateTree.innerText = stateInformation.filter(
-    (i) => i["state_name"] === e.target.feature.properties.name
-  )[0]["tree_name"];
+  treeImage.src =
+    "images/state_trees/tree_" + infoClickedState["state_abbrev"] + ".jpg";
 
-  let demoStates = ["AZ", "CO", "MT", "UT", "WY"];
-  if (demoStates.includes(e.target.feature.properties.abbrev)) {
-    treeImage.src =
-      "images/state_trees/tree_" + e.target.feature.properties.abbrev + ".png";
-  }
-
-  treesToPlant.href = stateInformation.filter(
-    (i) => i["state_name"] === e.target.feature.properties.name
-  )[0]["trees_plant_url"];
-  treesToPlant.innerText = "Planting Zones " + e.target.feature.properties.name;
+  treesToPlant.href = infoClickedState["trees_plant_url"];
+  treesToPlant.innerText = "Planting Zones " + clickedStateName;
 
   widthMap = containerMap.offsetWidth;
   if (widthMap < 768) {
@@ -332,23 +341,21 @@ function showStateInfo(e) {
 
     containerStateZoomMobile.innerHTML =
       '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
-      e.target.feature.properties.abbrev +
+      infoClickedState["state_abbrev"] +
       '.png">';
-
-    // hide zip code search
-    containerZipCodeSearch.style.display = "none";
   } else {
     containerStateZoom.style.display = "block";
     containerStateZoom.innerHTML = "";
 
     containerStateZoom.innerHTML =
       '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
-      e.target.feature.properties.abbrev +
+      infoClickedState["state_abbrev"] +
       '.png">';
   }
+  sidebarResults.show();
 }
 
-function hideStateInfo(e) {
+function hideStateInfo() {
   // the layers used to induce opacity are removed
   if (map.hasLayer(layerOpacityContiguous)) {
     map.removeLayer(layerOpacityContiguous);
@@ -377,11 +384,10 @@ function hideStateInfo(e) {
     containerStateZoomMobile.style.display = "none";
   }
 
-  if (containerZipCodeSearch.style.display === "none") {
-    containerZipCodeSearch.style.display = "block";
+  // state select menu is reset to default
+  if (selectState.value !== "none") {
+    selectState.value = "none";
   }
-
-  treeImage.src = "images/state_trees/test_img.png";
 }
 
 sidebarResults.on("shown", function () {
@@ -410,7 +416,7 @@ inputZipCode.addEventListener("input", function () {
       outputHardinessZone.textContent = "Not found";
     }
   } else {
-    outputHardinessZone.textContent = "Enter a 5-digit zip code";
+    outputHardinessZone.textContent = "Search zip code";
   }
 });
 
@@ -470,4 +476,77 @@ function decideMapLayout() {
   }
 }
 
+// ---------------MENU SELECT STATE---------------
+const selectState = document.querySelector("#select-state");
+let listStatesNames = [];
+
+stateInformation.forEach((i) => {
+  listStatesNames.push(i["state_name"]);
+});
+
+listStatesNames.forEach((i) => {
+  let newOption = document.createElement("option");
+  newOption.textContent = i;
+  newOption.label = i;
+  newOption.value = i;
+  selectState.appendChild(newOption);
+});
+
+function showStateInfoAtSelect(selectedOption) {
+  if (selectedOption === "none") {
+    hideStateInfo();
+  } else {
+    infoSelectedState = stateInformation.filter(
+      (i) => i["state_name"] === selectedOption
+    )[0];
+
+    stateName.innerText =
+      selectedOption + " (" + infoSelectedState["state_abbrev"] + ")";
+
+    let listStateZones = infoSelectedState["state_zones"]
+      .replaceAll("'", "")
+      .split(",");
+
+    stateScale.innerHTML = "";
+    listStateZones.forEach((zone) => {
+      stateScale.innerHTML += `<i class="sidepanel" style="background: ${colorsHardinessScale[zone]}">${zone}</i>`;
+    });
+
+    climateDescription.innerText = infoSelectedState["climate_description"];
+    nameStateTree.innerText = infoSelectedState["tree_name"];
+
+    treeImage.src =
+      "images/state_trees/tree_" + infoSelectedState["state_abbrev"] + ".jpg";
+
+    treesToPlant.href = infoSelectedState["trees_plant_url"];
+    treesToPlant.innerText = "Planting Zones " + selectedOption;
+
+    widthMap = containerMap.offsetWidth;
+    if (widthMap < 768) {
+      containerStateZoomMobile.style.display = "block";
+      containerStateZoomMobile.innerHTML = "";
+
+      containerStateZoomMobile.innerHTML =
+        '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
+        infoClickedState["state_abbrev"] +
+        '.png">';
+    } else {
+      containerStateZoom.style.display = "block";
+      containerStateZoom.innerHTML = "";
+
+      containerStateZoom.innerHTML =
+        '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
+        infoClickedState["state_abbrev"] +
+        '.png">';
+    }
+
+    sidebarResults.show();
+  }
+}
+
+// ---------------EVENT LISTENERS---------------
 window.addEventListener("resize", decideMapLayout);
+
+window.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") hideStateInfo();
+});
