@@ -528,7 +528,7 @@ function showStateInfoAtSelect(selectedOption) {
 
       containerStateZoomMobile.innerHTML =
         '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
-        infoClickedState["state_abbrev"] +
+        infoSelectedState["state_abbrev"] +
         '.png">';
     } else {
       containerStateZoom.style.display = "block";
@@ -536,7 +536,7 @@ function showStateInfoAtSelect(selectedOption) {
 
       containerStateZoom.innerHTML =
         '<img class="state-clipped" alt="state hardiness map" src="./images/state_zones/zones_' +
-        infoClickedState["state_abbrev"] +
+        infoSelectedState["state_abbrev"] +
         '.png">';
     }
 
