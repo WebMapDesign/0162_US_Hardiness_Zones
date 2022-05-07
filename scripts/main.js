@@ -39,7 +39,7 @@ const crs5070 = new L.Proj.CRS(
   "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
   {
     origin: [0, 0],
-    resolutions: [9000, 5500],
+    resolutions: [14000, 8000, 5500],
   }
 );
 
@@ -68,9 +68,10 @@ const disabledMapControls = {
   boxZoom: false,
   doubleClickZoom: false,
   zoomControl: false,
+  scrollWheelZoom: false
 };
 
-const centerContiguous = [36.0, -98.0];
+const centerContiguous = [36.0, -99.0];
 
 let map = L.map("map", {
   ...disabledMapControls,
@@ -276,10 +277,13 @@ layerOpacityHawaii = L.Proj.geoJson(geojsonStateHawaii, {
   onEachFeature: onEachFeatureOpacity,
 });
 
-let layerStatesContiguousNegative = L.Proj.geoJson(geojsonStatesContiguousNegative, {
-  style: styleHidden,
-  onEachFeature: onEachFeatureHidden,
-}).addTo(map);
+let layerStatesContiguousNegative = L.Proj.geoJson(
+  geojsonStatesContiguousNegative,
+  {
+    style: styleHidden,
+    onEachFeature: onEachFeatureHidden,
+  }
+).addTo(map);
 
 // ---------------STATE INFO ------------
 const stateName = document.querySelector("#state-name");
@@ -287,7 +291,7 @@ const climateDescription = document.querySelector("#climate-description");
 const nameStateTree = document.querySelector("#name-tree");
 const treeImage = document.querySelector("#tree-image");
 const treesToPlant = document.querySelector("#trees-to-plant");
-const stateScale = document.querySelector("#state-scale");
+const stateScale = document.querySelector("#div-state-scale");
 const containerStateZoom = document.querySelector("#div-state-zoom");
 const containerStateZoomMobile = document.querySelector(
   "#div-state-zoom-mobile"
@@ -413,10 +417,12 @@ inputZipCode.addEventListener("input", function () {
       outputHardinessZone.textContent =
         "Hardiness: Zone " + filterResult[0]["zone"];
     } else {
-      outputHardinessZone.textContent = "Not found";
+      outputHardinessZone.textContent = "Invalid zip code";
     }
+  } else if (inputSearchValue.length < 5) {
+    outputHardinessZone.textContent = "Enter zip code";
   } else {
-    outputHardinessZone.textContent = "Search zip code";
+    outputHardinessZone.textContent = "Invalid zip code";
   }
 });
 
@@ -464,15 +470,20 @@ let layerRasterHardinessZonesHI = L.imageOverlay(
 
 function decideMapLayout() {
   widthMap = containerMap.offsetWidth;
-  if (widthMap <= 768) {
+  if (widthMap <= 576) {
     map.setView(centerContiguous, 0);
     if (map.legendV) {
       map.removeControl(legendZonesVertical);
     }
-  }
-  if (widthMap > 768) {
+  } else if (widthMap <= 768) {
     map.setView(centerContiguous, 1);
+    if (map.legendV) {
+      map.removeControl(legendZonesVertical);
+    }
+  } else if (widthMap > 768) {
+    map.setView(centerContiguous, 2);
     map.addControl(legendZonesVertical);
+  } else {
   }
 }
 
