@@ -50,12 +50,12 @@
   </head>
 
   <body>
-    <div id="map-menu" class="container-fluid">
-      <div class="row">
-        <div class="col-5 col-sm-4 col-md-3">
-          <div id="div-zip-code-search" class="info">
-            <p>
-              <span id="hardiness-zone-output">Search zip code</span>
+    <div class="grid-container">
+      <div id="map-menu" class="container-fluid">
+        <div class="row">
+          <div class="col-5 info" id="div-zip-code-search">
+            <p class="menu-help-text">
+              <span id="hardiness-zone-output">Enter zip code</span>
             </p>
             <input
               id="zip-code-input"
@@ -64,53 +64,55 @@
               placeholder="Zip Code"
             />
           </div>
-        </div>
 
-        <div class="col-7 col-sm-4 col-md-3">
-          <div id="div-select-state" class="dropdown info">
-            <p>Select a state</p>
+          <div class="col-7 dropdown info" id="div-select-state">
+            <p class="menu-help-text">Select State</p>
             <select
               class="form-select"
               id="select-state"
               aria-label="Default select example"
               onchange="showStateInfoAtSelect(value)"
             >
-              <option value="none">-- Select State --</option>
+              <option value="none">-- State --</option>
             </select>
           </div>
         </div>
       </div>
-    </div>
-    <div id="map">
-      <div id="map-Alaska"></div>
-      <div id="map-Hawaii"></div>
-
-      <div id="legend-zones-horizontal" class="flex-container info"></div>
+      <div id="map-container">
+        <div id="map">
+          <div id="map-Alaska" class="info"></div>
+          <div id="map-Hawaii" class="info"></div>
+        </div>
+      </div>
+      <div id="legend-container">
+        <div id="legend-zones-horizontal" class="flex-container info"></div>
+      </div>
     </div>
 
     <div id="div-state-zoom"></div>
 
-    <div id="div-sidebar-info">
-      <div class="card" style="max-width: 25rem">
-        <div class="card-body">
-          <p class="card-title" id="state-name">COLORADO (CO)</p>
+    <div id="div-sidebar-info" class="card" style="max-width: 25rem">
+      <div class="card-body">
+        <p class="card-title" id="state-name">COLORADO (CO)</p>
 
-          <div class="row">
-            <div class="col-2 sidepanel" id="state-scale"></div>
-            <div class="col-10">
+        <div class="row">
+          <div class="col-2 sidepanel" id="div-state-scale"></div>
+          <div class="col-10">
+            <div id="div-climate-description">
               <p class="card-text" id="climate-description"></p>
-              <br />
-              <p class="card-title" id="state-tree">
-                State Tree: <span id="name-tree">Blue Spruce</span>
-              </p>
+            </div>
+            <p class="card-title" id="state-tree">
+              State Tree: <span id="name-tree">Blue Spruce</span>
+            </p>
+            <div id="div-tree-image">
               <img
                 src=""
                 id="tree-image"
                 class="card-img-top"
                 alt="tree image"
               />
-              <br />
-              <br />
+            </div>
+            <div id="div-trees-to-plant">
               <p>
                 More Info:
                 <a
@@ -122,8 +124,8 @@
                   Planting Zones</a
                 >
               </p>
-              <div id="div-state-zoom-mobile"></div>
             </div>
+            <div id="div-state-zoom-mobile"></div>
           </div>
         </div>
       </div>
